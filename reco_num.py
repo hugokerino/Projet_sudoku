@@ -89,7 +89,7 @@ for f in data.rglob("*.jpg"):
     img = resize((img - np.mean(img))/np.std(img),(25,40),anti_aliasing=True) #Standardization
     tab_num.append(img) # Reference images
     tab_num_blurred.append(filters.gaussian(img,0.5)) #Blurred with Gaussian filter
-    tab_num_shift.append(shift_img(img,8)) #Shifting the image
+    tab_num_shift.append(shift_img(img,5)) #Shifting the image
     tab_num_shift_blurred.append(filters.gaussian(tab_num_shift[-1],0.5)) # Filtered and shifting
 
 

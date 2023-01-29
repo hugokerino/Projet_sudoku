@@ -1,0 +1,1 @@
+Fait uniquement les 2 premières (gaucge si sudoku dans le bon sens) colonnes (en haut) 

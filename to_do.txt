@@ -1,0 +1,3 @@
+1 rotate image de test
+2 test des algo sur ces images, essayer avec différentes dimensions 
+3 si ne marche pas, pre-triatement => détection de contour 
