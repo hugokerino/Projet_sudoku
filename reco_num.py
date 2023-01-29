@@ -5,9 +5,10 @@ Code reconnaissance de chiffre
 """
 
 import numpy as np
+import scipy.ndimage
+import scipy.signal
 from matplotlib import pyplot as plt
 from pathlib import Path
-from scipy.ndimage import correlate
 
 from skimage import io
 from skimage import img_as_float
@@ -15,6 +16,7 @@ from skimage.color import rgb2gray
 from skimage import filters
 from skimage.transform import resize
 from skimage.morphology import erosion, dilation 
+
 
 
 # Functions
@@ -37,7 +39,7 @@ def shift_img(img,shifting):
 def correlate_img(img,tab_img):
     max_test = 0
     for i in range(len(tab_img)):
-        test = correlate(img,tab_img[i],mode='constant', cval=0)
+        test = scipy.ndimage.correlate(img,tab_img[i],mode='constant', cval=0)
         if np.max(test) > max_test :
             num = i
             max_test = np.max(test)
@@ -46,7 +48,8 @@ def correlate_img(img,tab_img):
 def correlate_img_FFT(img,tab_img):
     max_test = 0
     for i in range(len(tab_img)):
-        test = np.fft.ifft2(np.fft.fft2(img)*np.fft.fft2(tab_img[i]))
+        #test = np.abs(np.fft.ifft2(np.fft.fft2(img)*np.fft.fft2(tab_img[i])))        
+        test = scipy.signal.correlate(img,tab_img[i],method='fft')
         if np.max(test) > max_test :
             num = i
             max_test = np.max(test)
@@ -61,14 +64,17 @@ def test_correlate(tab_img_to_reco,tab_img_data):
     for i in range(len(tab_img_to_reco)):
         num = correlate_img_FFT(tab_img_to_reco[i],tab_img_data)
         if num == i:
-            print("Passed")
+            print(f"{i} Passed")
             count_passed += 1
         else:
             print("Failed")
             tab_failed.append((i,num))
             
     test_score = count_passed/len(tab_img_to_reco)
-    print(f"Test score = {test_score},\nUnable to detect = {tab_failed}\n")
+    print(f"Test score = {test_score}")
+    if count_passed != len(tab_img_to_reco):
+          print(f"Unable to detect = {tab_failed}\n")
+ 
     
 #Import data
 data = Path().cwd() / 'data' / 'num_police1'
@@ -80,28 +86,38 @@ tab_num_shift_blurred = []
 
 for f in data.rglob("*.jpg"):
     img = rgb2gray(img_as_float(io.imread(f))) #Normalization
-    img = resize((img - np.mean(img))/np.std(img),(50,80),anti_aliasing=True) #Standardization
+    img = resize((img - np.mean(img))/np.std(img),(25,40),anti_aliasing=True) #Standardization
     tab_num.append(img) # Reference images
-    tab_num_blurred.append(filters.gaussian(img,1)) #Blurred with Gaussian filter
+    tab_num_blurred.append(filters.gaussian(img,0.5)) #Blurred with Gaussian filter
     tab_num_shift.append(shift_img(img,8)) #Shifting the image
-    tab_num_shift_blurred.append(filters.gaussian(tab_num_shift[-1],1)) # Filtered and shifting
+    tab_num_shift_blurred.append(filters.gaussian(tab_num_shift[-1],0.5)) # Filtered and shifting
+
+
 
 #Plot data imported
-# plot_num(tab_num,1)
-# plot_num(tab_num_blurred,2)
-# plot_num(tab_num_shift,3)
-# plot_num(tab_num_shift_blurred,4)
+plot_num(tab_num,1)
+plot_num(tab_num_blurred,2)
+plot_num(tab_num_shift,3)
+plot_num(tab_num_shift_blurred,4)
 
-#Test algo recognition
-# print("Test with blurred number")
-# test_correlate(tab_num_blurred,tab_num)
+# Test algo recognition
+print("Test with blurred number")
+test_correlate(tab_num_blurred,tab_num)
 
-# print("Test with shifted number")
-# test_correlate(tab_num_shift,tab_num)
+print("Test with shifted number")
+test_correlate(tab_num_shift,tab_num)
 
-# print("Test with shifted and blurred number")
-# test_correlate(tab_num_shift_blurred,tab_num)
+print("Test with shifted and blurred number")
+test_correlate(tab_num_shift_blurred,tab_num)
 
 
-test = np.fft.ifft2(np.fft.fft2(tab_num[0])*np.fft.fft2(tab_num[0]))
-test2 = correlate(tab_num[0],tab_num[0],mode='constant', cval=0)
+test = np.abs(np.fft.ifft2(np.fft.fft2(tab_num[0])*np.fft.fft2(tab_num[0])))
+test2 = scipy.ndimage.correlate(tab_num[0],tab_num[0],mode='constant', cval=0)
+test3 = scipy.signal.correlate(tab_num[0],tab_num[0],method='fft')
+
+arg1 = np.unravel_index(np.argmax(test, axis=None), test.shape)
+arg2 = np.unravel_index(np.argmax(test2, axis=None), test2.shape)
+arg3 = np.unravel_index(np.argmax(test3, axis=None), test3.shape)
+
+
+
