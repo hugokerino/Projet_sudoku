@@ -14,20 +14,25 @@ from skimage.color import rgb2gray
 from skimage.transform import resize, rotate
 
 from functions import plot_num, plot_4num, test_correlate_num
-          
+     
+x_resize = 30
+y_resize = 30
+
+
 #Import data reference
 data = Path().cwd() / 'data' / 'data_train' / 'num'
 
-x_resize = 30
-y_resize = 40
-
+k = 1
 tab_num = []
 for f in data.rglob("*.jpg"):
     img = rgb2gray(img_as_float(io.imread(f))) #Normalization
     img = resize((img - np.mean(img))/np.std(img),(x_resize,y_resize),anti_aliasing=True) #Standardization
-    tab_num.append(img) # Reference images
+    tab_num.append((img,k)) # Reference images
+    tab_num.append((rotate(img,90),k))
+    tab_num.append((rotate(img,180),k))
+    tab_num.append((rotate(img,270),k))
+    k += 1
    
-    
 #Import data test
 data_test = Path().cwd() / 'data' / 'data_test' 
 
@@ -61,48 +66,51 @@ for f in num_sudoku4.glob("*.jpg"):
     tab_num_sudoku4.append((img,int(f.name[0])))
 
 
+#Rotate numbers
+tab_num_sudoku5 = []
+tab_num_sudoku6 = []
+tab_num_sudoku7 = []
+for k in range(len(tab_num_sudoku1)):
+    tab_num_sudoku5.append((rotate(tab_num_sudoku1[k][0],90),tab_num_sudoku1[k][1]))
+    tab_num_sudoku6.append((rotate(tab_num_sudoku1[k][0],180),tab_num_sudoku1[k][1]))
+    tab_num_sudoku7.append((rotate(tab_num_sudoku1[k][0],270),tab_num_sudoku1[k][1]))
+
 #Plot 
-plot_num(tab_num,1)
+#plot_num(tab_num,1)
 plot_4num(tab_num_sudoku1, 2)
 plot_4num(tab_num_sudoku2, 3)
 plot_4num(tab_num_sudoku3, 4)
 plot_4num(tab_num_sudoku4, 5)
 
 
+# plot_4num(tab_num_sudoku5, 6)
+# plot_4num(tab_num_sudoku6, 7)
+# plot_4num(tab_num_sudoku7, 8)
+
+
+
 #Tests
 # Test number of same sudoku different acquisition
 print("Test with first sudoku :")
 test_correlate_num(tab_num_sudoku1,tab_num)
-# Test number of different sudoku
+#Test number of different sudoku different police
 print("Test with second sudoku :")
 test_correlate_num(tab_num_sudoku2,tab_num)
+# # Test number of different sudoku
+# print("Test with third sudoku :")
+# test_correlate_num(tab_num_sudoku3,tab_num)
+# #Test number of different sudoku
+# print("Test with fourth sudoku :")
+# test_correlate_num(tab_num_sudoku4,tab_num)
+
+
 # Test number of different sudoku
-print("Test with third sudoku :")
-test_correlate_num(tab_num_sudoku3,tab_num)
+print("Test with fifth sudoku rotated 90 :")
+test_correlate_num(tab_num_sudoku5,tab_num)
 # Test number of different sudoku
-print("Test with fourth sudoku :")
-test_correlate_num(tab_num_sudoku4,tab_num)
+print("Test with sixth sudoku rotated 180 :")
+test_correlate_num(tab_num_sudoku6,tab_num)
+# Test number of different sudoku
+print("Test with seventh sudoku rotated 270:")
+test_correlate_num(tab_num_sudoku7,tab_num)
 
-
-# from matplotlib import pyplot as plt
-# from skimage.filters import threshold_otsu,try_all_threshold
-
-# def thresholding (img):
-#     test = np.copy(img)
-#     thresh = threshold_otsu(test)
-#     img = test > thresh
-#     return img
-
-# def stat_img(img):
-#     print(f"Mean of image = {np.mean(img)}")
-#     print(f"Max of image = {np.max(img)}")
-#     print(f"Min of image = {np.min(img)}")
-
-
-# k = 5
-# test = np.copy(tab_num[k])
-# # img = thresholding(test)
-# # plt.subplot(2,1,1), plt.imshow(test,cmap='binary'), plt.title("before")
-# # plt.subplot(2,1,2), plt.imshow(img,cmap='binary'), plt.title("after")
-
-# fig, ax = try_all_threshold(test, figsize=(10, 6), verbose=False)

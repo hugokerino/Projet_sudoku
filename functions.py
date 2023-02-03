@@ -50,20 +50,19 @@ def plot_4num(imgs,i):
 #tab_img : table of references images
 def correlate_img_FFT(img,tab_img):
     max_test = 0
-    for i in range(len(tab_img)):
-        #test = np.abs(np.fft.ifft2(np.fft.fft2(img)*np.fft.fft2(tab_img[i])))    
-        test = scipy.signal.correlate(img,tab_img[i],mode = 'same',method='fft')
+    for i in range(len(tab_img)):   
+        test = scipy.signal.correlate(img,tab_img[i][0],mode = 'same',method='fft') 
         if np.max(test) > max_test :
-            num = i+1
+            num = tab_img[i][1]
             max_test = np.max(test)
     return num
 
 
 
-# Test data number to detect#
+#Test data number to detect#
 
-# tab_img_to_reco : table of numbers to detect
-# tab_img_data : table of references numbers
+#tab_img_to_reco : table of numbers to detect
+#tab_img_data : table of references numbers
 def test_correlate_num(tab_img_to_reco,tab_img_data):
     count_passed = 0
     tab_failed = []
@@ -81,5 +80,7 @@ def test_correlate_num(tab_img_to_reco,tab_img_data):
     if count_passed != len(tab_img_to_reco):
           print(f"Confusion beetwen (label,reconnu) : \n {tab_failed}\n")
 
+
     
+
                  
