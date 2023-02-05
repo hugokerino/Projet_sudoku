@@ -14,15 +14,25 @@ from skimage import io
 from skimage import img_as_float
 from skimage.color import rgb2gray
 from skimage.transform import resize, rotate
+from skimage import filters
 from matplotlib import pyplot as plt
 
 #Functions
+def img_is_empty(img):
+    if (np.mean(filters.sobel(img))) < 0.01 : return True
+    else : return False
+
+
 def find_orientation(tab_num_to_reco, tab_num_model):
     possible_orientation = [0,90,180,270]
     tab_orientation = []
+    
     for i in range(len(tab_num_to_reco)):
+        if (img_is_empty(tab_num_to_reco[i][0]) == True) : 
+            continue
+            
         max_inter_corr = 0
-        orientation = 0
+    
         for k in range(len(tab_num_model)):
             inter_corr = scipy.signal.correlate(tab_num_to_reco[i][0],tab_num_model[k][0],mode = 'same',method='fft') 
             test = np.max(inter_corr)
@@ -30,6 +40,7 @@ def find_orientation(tab_num_to_reco, tab_num_model):
                 max_inter_corr = test
                 orientation = tab_num[k][2]
         tab_orientation.append(orientation)
+        
     nbr_occurence = (tab_orientation.count(0),tab_orientation.count(90),tab_orientation.count(180),tab_orientation.count(270))
     orientation_f = possible_orientation[nbr_occurence.index(max(nbr_occurence))]
     print(f"Orientation = {orientation_f}")
@@ -40,7 +51,14 @@ def number_recognition(tab_num_to_reco, tab_num_model, orientation):
     tab_error = []
     count_passed = 0
     possible_orientation = [0,90,180,270]
+    
     for i in range(len(tab_num_to_reco)):
+        if (img_is_empty(tab_num_to_reco[i][0]) == True) : 
+            if (0 == tab_num_to_reco[i][1] ):
+                count_passed += 1
+                print(f"num = vide; label = {tab_num_to_reco[i][1]} passed ")
+            continue
+        
         max_inter_corr = 0
         for k in range(possible_orientation.index(orientation),len(tab_num_model),4):
             inter_corr = scipy.signal.correlate(tab_num_to_reco[i][0],tab_num_model[k][0],mode = 'same',method='fft') 
@@ -79,11 +97,13 @@ def plot_9nums_test(tab_num_test,i):
         plt.imshow(tab_num_test[k][0],cmap='binary')
         plt.title(str(tab_num_test[k][1]))
 
+
+
     
 #Global parameters
 x_resize = 30
 y_resize = 30
-sudoku_test = 'Sudoku3'
+sudoku_test = 'Sudoku2'
 
 #Import data reference
 data = Path().cwd() / 'data' / 'data_train' / 'num'
@@ -105,7 +125,7 @@ num_sudoku1 = data_test / sudoku_test / 'num'
 tab_num_sudoku1 = []
 for f in num_sudoku1.glob("*.jpg"):
     img = rgb2gray(img_as_float(io.imread(f)))
-    img = resize(img,(x_resize,y_resize),anti_aliasing=True)
+    img = resize(img ,(x_resize,y_resize),anti_aliasing=True)
     tab_num_sudoku1.append((img,int(f.name[0])))
 
 #Plot
