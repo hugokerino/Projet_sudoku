@@ -38,7 +38,7 @@ def find_orientation(tab_num_to_reco, tab_num_model):
             test = np.max(inter_corr)
             if test > max_inter_corr :
                 max_inter_corr = test
-                orientation = tab_num[k][2]
+                orientation = tab_num_model[k][2]
         tab_orientation.append(orientation)
         
     nbr_occurence = (tab_orientation.count(0),tab_orientation.count(90),tab_orientation.count(180),tab_orientation.count(270))
@@ -59,20 +59,21 @@ def number_recognition(tab_num_to_reco, tab_num_model, orientation):
                 print(f"num = vide; label = {tab_num_to_reco[i][1]} passed ")
             continue
         
-        max_inter_corr = 0
+        test = 0
         for k in range(possible_orientation.index(orientation),len(tab_num_model),4):
             inter_corr = scipy.signal.correlate(tab_num_to_reco[i][0],tab_num_model[k][0],mode = 'same',method='fft') 
-            test = np.max(inter_corr)
-            if test > max_inter_corr :
-                num = tab_num[k][1]
-                max_inter_corr = test
+            res = np.max(inter_corr)
+            if res > test:
+                num = tab_num_model[k][1]
+                test = res
+                
         if (num == tab_num_to_reco[i][1] ):
             count_passed += 1
             print(f"num = {num}; label = {tab_num_to_reco[i][1]} passed ")
         else :
             tab_error.append((num,tab_num_to_reco[i][1]))
             print(f"num = {num}; label = {tab_num_to_reco[i][1]} failed")
-
+        
     print(f"Score = {count_passed*100/len(tab_num_to_reco)}%")
 
     if (count_passed != len(tab_num_to_reco)):
@@ -103,7 +104,7 @@ def plot_9nums_test(tab_num_test,i):
 #Global parameters
 x_resize = 30
 y_resize = 30
-sudoku_test = 'Sudoku2'
+sudoku_test = 'Sudoku3'
 
 #Import data reference
 data = Path().cwd() / 'data' / 'data_train' / 'num'
@@ -129,9 +130,11 @@ for f in num_sudoku1.glob("*.jpg"):
     tab_num_sudoku1.append((img,int(f.name[0])))
 
 #Plot
+plt.close()
 plot_num_model(tab_num, 1)
 plot_9nums_test(tab_num_sudoku1, 2)
 
 #Test algo
 orientation = find_orientation(tab_num_sudoku1,tab_num)
 number_recognition(tab_num_sudoku1, tab_num, orientation)
+
