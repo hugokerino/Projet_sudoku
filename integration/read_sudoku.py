@@ -34,8 +34,11 @@ if __name__ == "__main__":
         pixel_resize = args.size_case
 
     [cases,theta] = final.read_grid(img,pixel_resize)
+    
     img = cases[0,0]
-    plt.savefig(img)
+    plt.figure()
+    plt.imshow(img)
+    plt.savefig("img")
     
     if(args.output == None):
         output_path = pathlib.Path().absolute() 
