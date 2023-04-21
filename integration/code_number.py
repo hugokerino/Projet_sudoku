@@ -78,7 +78,7 @@ def number_recognition(tab_num_to_reco, tab_num_model, orientation):
                 if test > max_inter_corr :
                     num = tab_num_model[k][1]
                     max_inter_corr = test
-            print(num)
+            
             if (orientation == 0):
                 tab_to_return[i,j] = num
             elif (orientation == 90):
@@ -90,7 +90,7 @@ def number_recognition(tab_num_to_reco, tab_num_model, orientation):
             else:
                 print("erreur orientation\n")
             
-                    
+    print(tab_to_return)             
     return tab_to_return
 
 
