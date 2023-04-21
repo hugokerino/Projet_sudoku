@@ -1,5 +1,6 @@
 import sys
 import pathlib
+from matplotlib import pyplot as plt 
 
 from code_number import import_data_model,find_orientation,number_recognition,write_sudoku,plot_num_model
 from code_grid import final
@@ -33,6 +34,8 @@ if __name__ == "__main__":
         pixel_resize = args.size_case
 
     [cases,theta] = final.read_grid(img,pixel_resize)
+    img = cases[0,0]
+    plt.savefig(img)
     
     if(args.output == None):
         output_path = pathlib.Path().absolute() 
