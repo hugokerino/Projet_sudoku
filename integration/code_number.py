@@ -18,7 +18,7 @@ def import_data_model(taille_case):
     data = Path().cwd() / 'data' / 'data_train' / 'num_police2bis'
     k = 1
     tab_num_model = []
-    for f in data.rglob("*.jpg"):
+    for f in sorted(list(data.rglob("*.jpg"))):
         img = rgb2gray(img_as_float(io.imread(f))) #Normalization
         img = transform.resize((img - np.mean(img))/np.std(img),(taille_case,taille_case)) #Standardization
         tab_num_model.append((img,k,0)) # Reference images
@@ -78,7 +78,7 @@ def number_recognition(tab_num_to_reco, tab_num_model, orientation):
                 if test > max_inter_corr :
                     num = tab_num_model[k][1]
                     max_inter_corr = test
-            
+           
             if (orientation == 0):
                 tab_to_return[i,j] = num
             elif (orientation == 90):
@@ -90,7 +90,7 @@ def number_recognition(tab_num_to_reco, tab_num_model, orientation):
             else:
                 print("erreur orientation\n")
             
-    print(tab_to_return)             
+                    
     return tab_to_return
 
 
