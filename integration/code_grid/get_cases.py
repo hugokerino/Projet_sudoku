@@ -34,8 +34,8 @@ def clean_case(case,len_kernel=3):
 
 def getcases(img,coord,taille_case=30,eps=3):
     grid=[]
-    for i in range(9):
-        for j in range(9):
+    for j in range(9):
+        for i in range(9):
             grid.append(
                 
                 cv2.resize (getcase_ij(img,coord,i,j,eps), dsize=(taille_case,taille_case) ) ) 
@@ -56,6 +56,7 @@ def print_grid(grid:np.ndarray):
             plt.subplot(9,9,9*i+j+1)
             plt.axis("off")
             plt.imshow(grid[i][j])
+    plt.show()
 
 def get_parser():
     parser = utils.get_base_parser("detect grid")
