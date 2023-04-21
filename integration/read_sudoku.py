@@ -40,6 +40,11 @@ if __name__ == "__main__":
     plt.imshow(img)
     plt.savefig("img")
     
+    img = cases[1,1]
+    plt.figure()
+    plt.imshow(img)
+    plt.savefig("img2")
+    
     if(args.output == None):
         output_path = pathlib.Path().absolute() 
     else:
