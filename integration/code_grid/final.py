@@ -39,7 +39,7 @@ def get_coordinates_cases(img):
         
     return res
     
-""""
+"""
 im = utils.read(pathlib.Path("../grille sudoku/4.jpg"))
 utils.iprint(im)
 rotated = rotate_image.rotate(im,0)
@@ -49,7 +49,7 @@ coord = get_coordinates_cases(im,facteur_resize)
 
 detect_grid.print_coord_img(im,coord)
 
-""""
+"""
     
     
     
