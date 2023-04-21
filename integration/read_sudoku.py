@@ -35,7 +35,7 @@ if __name__ == "__main__":
 
     [cases,theta] = final.read_grid(img,pixel_resize)
     
-    img = cases[0,0]
+    img = cases[0,3]
     plt.figure()
     plt.imshow(img)
     plt.savefig("img")
